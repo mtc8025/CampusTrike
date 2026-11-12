@@ -1,0 +1,5 @@
+-- SECURITY: Run manually only after creating a bcrypt hash offline.
+-- Replace the placeholders. Never expose public administrator registration.
+-- Example hash generation: node -e "require('bcryptjs').hash('A-strong-unique-password',12).then(console.log)"
+INSERT INTO users(full_name,email,password_hash,role,status)
+VALUES ('CampusTrike System Administrator','admin@example.edu.ng','REPLACE_WITH_BCRYPT_HASH','admin','active');

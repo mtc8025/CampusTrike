@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d7a45">
+  <meta name="description" content="CampusTrike — AFUSTA campus tricycle booking">
+  <title>CampusTrike | AFUSTA Campus Mobility</title>
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/afusta-ride-favicon.png">
+  <link rel="apple-touch-icon" href="assets/afusta-ride-favicon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- PUBLIC VIEW (logged out) -->
+  <div id="publicView">
+    <header class="public-header">
+      <a class="brand" href="#home">
+        <img src="assets/campustrike-icon.svg" alt="" class="brand-icon" width="36" height="36">
+        <span><strong>CampusTrike</strong><small>AFUSTA Campus Mobility</small></span>
+      </a>
+      <nav class="public-nav">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <button class="btn-primary" id="openAuthBtn" type="button">Sign in</button>
+      </nav>
+    </header>
+
+    <section class="hero" id="home">
+      <h1>Smarter Way to Move<br>Around Campus</h1>
+      <p>Experience fast, affordable and safe tricycle rides across Abdullahi Fodio University of Science and Technology, Aliero.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" id="heroBookBtn" type="button">Book a Ride</button>
+        <button class="btn-secondary" id="heroDriverBtn" type="button">Become a Driver</button>
+      </div>
+    </section>
+
+    <section class="main-content" id="aboutPublic" style="max-width:800px;margin:0 auto;padding:40px 24px">
+      <div class="card">
+        <h3>About CampusTrike</h3>
+        <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0">
+          CampusTrike is the official campus mobility platform for AFUSTA. Students request rides between approved locations,
+          drivers accept and complete trips, and administrators manage approvals and fares. Cash payment to the driver.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- Registration split page (Figure 4.2 style) -->
+    <section id="registerPage" class="register-page" hidden>
+      <div class="register-split">
+        <div class="register-promo">
+          <div class="register-promo-inner">
+            <div style="font-size:48px;margin-bottom:16px">🛵</div>
+            <h2>Drive &amp; Earn</h2>
+            <p>Join campus tricycle operators and earn on AFUSTA routes.</p>
+          </div>
+        </div>
+        <div class="register-form-panel">
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-auth-mode="login" id="tabLogin">Login</button>
+            <button type="button" class="auth-tab" data-auth-mode="register" id="tabRegister">Register</button>
+          </div>
+          <h2 id="regTitle">Welcome back</h2>
+          <p id="regDesc" style="color:var(--muted);font-size:14px;margin:0 0 18px">Sign in to manage your campus rides.</p>
+          <form id="authFormPage">
+            <div id="nameFieldPage" hidden>
+              <label for="authNamePage">Full name</label>
+              <input id="authNamePage" autocomplete="name" minlength="2" maxlength="140">
+            </div>
+            <label for="authEmailPage">Email address</label>
+            <input id="authEmailPage" type="email" autocomplete="email" required>
+            <label for="authPasswordPage">Password</label>
+            <input id="authPasswordPage" type="password" autocomplete="current-password" minlength="10" required>
+            <div id="roleFieldPage" hidden>
+              <label for="authRolePage">Account type</label>
+              <select id="authRolePage">
+                <option value="student">Student</option>
+                <option value="driver">Tricycle driver</option>
+              </select>
+            </div>
+            <button class="btn-primary full" id="authSubmitPage" type="submit">Sign in →</button>
+          </form>
+          <p class="fine-print" style="margin-top:14px">Admin accounts are provisioned by the system owner only.</p>
+          <button type="button" class="btn-secondary" id="backFromAuth" style="margin-top:12px">← Back to home</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="public-footer">
+      <div class="brand">
+        <img src="assets/campustrike-icon.svg" alt="" class="brand-icon" width="28" height="28">
+        <span><strong>CampusTrike</strong></span>
+      </div>
+      <p>Subject to AFUSTA approval · Demo fares &amp; locations</p>
+    </footer>
+  </div>
+
+  <!-- AUTHENTICATED APP SHELL -->
+  <div id="appShell" class="app-shell">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/campustrike-icon.svg" alt="" width="34" height="34">
+        <strong id="sidebarTitle">CampusTrike</strong>
+      </div>
+      <div class="sidebar-user">
+        <div class="label">Logged in as</div>
+        <div class="name" id="sidebarUserName">—</div>
+        <div id="onlineToggleWrap" hidden style="margin-top:10px">
+          <button type="button" id="onlineToggle" class="btn-secondary" style="width:100%;font-size:12px;padding:8px">Go Online</button>
+        </div>
+      </div>
+      <nav class="sidebar-nav" id="sidebarNav">
+        <!-- filled by JS based on role -->
+      </nav>
+      <div class="sidebar-footer">
+        <button type="button" id="sidebarLogout">Log out</button>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <div class="main-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="menu-toggle" id="menuToggle" type="button" aria-label="Menu">☰</button>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <div class="notif-wrap" id="notifWrap">
+            <button id="notifBtn" class="notif-btn" type="button" aria-label="Notifications">🔔</button>
+            <span id="notifBadge" class="notif-badge" hidden>0</span>
+            <div id="notifPanel" class="notif-panel" hidden>
+              <div class="notif-header">
+                <span>Notifications</span>
+                <button type="button" class="btn-secondary" id="markAllRead" style="padding:4px 10px;font-size:11px">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notifList">
+                <div class="notif-empty">No notifications yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <!-- DASHBOARD / TRIPS -->
+        <section class="page active" id="page-trips" data-page="trips">
+          <div class="grid-4" id="statsGrid" style="margin-bottom:24px">
+            <div class="stat-card"><small>Total trips</small><strong id="statTotal">0</strong></div>
+            <div class="stat-card"><small>Active</small><strong id="statActive">0</strong></div>
+            <div class="stat-card"><small>Completed</small><strong id="statCompleted">0</strong></div>
+            <div class="stat-card"><small>Recorded fares</small><strong id="statFares">₦0</strong></div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+              <select id="statusFilter" style="max-width:160px;margin:0">
+                <option value="">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="driver_arriving">Driver arriving</option>
+                <option value="in_progress">In progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <input type="search" id="tripSearch" placeholder="Search reference…" style="max-width:200px;margin:0">
+              <button class="btn-secondary" id="refreshBtn" type="button">↻ Refresh</button>
+            </div>
+            <div id="tripsList">
+              <div class="empty-state"><strong>No trips yet</strong>Book a ride or wait for requests.</div>
+            </div>
+          </div>
+
+          <div id="adminPanels" hidden>
+            <div class="grid-4" style="margin-bottom:20px">
+              <div class="stat-card"><small>Pending requests</small><strong id="statPending">0</strong></div>
+              <div class="stat-card"><small>Revenue</small><strong id="statRevenue">₦0</strong></div>
+              <div class="stat-card"><small>Avg rating</small><strong id="statAvgRating">—</strong></div>
+              <div class="stat-card"><small>Rated trips</small><strong id="statRated">0</strong></div>
+            </div>
+            <div class="grid-2">
+              <div class="card">
+                <h3>Driver approvals</h3>
+                <div id="driverApprovals"><p class="fine-print">Loading…</p></div>
+              </div>
+              <div class="card">
+                <h3>Fare settings</h3>
+                <label for="baseFare">Base fare (₦)</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input id="baseFare" type="number" min="0" step="50" value="300" style="margin:0;max-width:120px">
+                  <button class="btn-secondary" id="saveFare" type="button">Save</button>
+                </div>
+                <label for="perZoneFare" style="margin-top:12px">Per-zone fare (₦)</label>
+                <input id="perZoneFare" type="number" min="0" step="10" value="50">
+                <p class="fine-print">Changes apply to future bookings.</p>
+              </div>
+            </div>
+            <div class="card" style="margin-top:20px">
+              <h3>Recent activity</h3>
+              <div id="activityList"><p class="fine-print">Loading…</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOOK -->
+        <section class="page" id="page-book" data-page="book">
+          <div class="grid-2">
+            <div class="card">
+              <h3>Request a ride</h3>
+              <div style="display:flex;gap:8px;margin-bottom:16px">
+                <button type="button" class="btn-secondary" id="modeQuick" style="flex:1;background:var(--green);color:#fff;border-color:var(--green)">Quick request</button>
+                <button type="button" class="btn-secondary" id="modeChoose" style="flex:1">Choose driver</button>
+              </div>
+              <form id="bookingForm">
+                <div class="form-row">
+                  <div>
+                    <label for="pickup">Pickup location</label>
+                    <select id="pickup" required></select>
+                  </div>
+                  <div>
+                    <label for="destination">Destination</label>
+                    <select id="destination" required></select>
+                  </div>
+                </div>
+                <div id="chooseDriverFields" hidden>
+                  <label for="preferredDriver">Available driver</label>
+                  <select id="preferredDriver"><option value="">Loading drivers…</option></select>
+                  <div class="form-row">
+                    <div>
+                      <label for="rideDate">Date</label>
+                      <input id="rideDate" type="date">
+                    </div>
+                    <div>
+                      <label for="rideTime">Time</label>
+                      <input id="rideTime" type="time">
+                    </div>
+                  </div>
+                </div>
+                <label for="note">Note for driver (optional)</label>
+                <textarea id="note" rows="2" maxlength="200" placeholder="e.g. Near the blue gate"></textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 16px;padding-top:12px;border-top:1px solid var(--line)">
+                  <div>
+                    <small style="color:var(--muted);font-weight:600">Estimated fare</small>
+                    <div style="font-size:22px;font-weight:800;color:var(--green)" id="formFare">₦300</div>
+                  </div>
+                  <span id="fareHint" style="font-size:12px;color:var(--muted)">Base fare</span>
+                </div>
+                <button class="btn-primary full" type="submit" id="bookSubmit">Request ride →</button>
+                <p class="fine-print">Pay the driver in cash when the trip is completed.</p>
+              </form>
+            </div>
+            <div class="card">
+              <h3>Campus map</h3>
+              <div class="map-placeholder" id="mapPlaceholder">
+                <div class="map-inner">
+                  <div class="map-pin">📍</div>
+                  <strong id="mapPickupLabel">Main Gate</strong>
+                  <div class="map-line"></div>
+                  <div class="map-pin dest">🏁</div>
+                  <strong id="mapDestLabel">University Library</strong>
+                  <p class="fine-print" style="margin-top:12px">AFUSTA campus route preview</p>
+                </div>
+              </div>
+              <h3 style="margin-top:20px">How it works</h3>
+              <ol style="margin:0;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.8">
+                <li>Choose pickup and destination</li>
+                <li>Confirm the estimated fare</li>
+                <li>Submit — drivers are notified</li>
+                <li>Driver accepts and arrives</li>
+                <li>Pay cash and rate your trip</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section class="page" id="page-profile" data-page="profile">
+          <div class="card" style="margin-bottom:20px">
+            <div class="profile-header">
+              <div class="avatar" id="profileAvatar">?</div>
+              <div>
+                <h2 style="margin:0;font-family:'Plus Jakarta Sans',sans-serif;font-size:20px" id="profileName">—</h2>
+                <p style="margin:4px 0 0;color:var(--muted);font-size:13px" id="profileEmail">—</p>
+                <span class="status-pill" id="profileRole" style="margin-top:8px">—</span>
+              </div>
+            </div>
+            <h3>Current Details</h3>
+            <div class="detail-grid">
+              <div class="detail-item"><label>Full name</label><span id="infoName">—</span></div>
+              <div class="detail-item"><label>Email</label><span id="infoEmail">—</span></div>
+              <div class="detail-item"><label>Role</label><span id="infoRole">—</span></div>
+              <div class="detail-item"><label>Status</label><span id="infoStatus">—</span></div>
+              <div class="detail-item"><label>Member since</label><span id="infoJoined">—</span></div>
+              <div class="detail-item"><label>Tricycle plate</label><span id="infoPlate">N/A</span></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:20px">
+            <h3>Update profile</h3>
+            <label for="editName">Display name</label>
+            <div style="display:flex;gap:8px">
+              <input id="editName" type="text" maxlength="140" style="margin:0">
+              <button class="btn-secondary" id="saveNameBtn" type="button">Save</button>
+            </div>
+          </div>
+          <div class="card" id="vehicleSection" hidden>
+            <h3>Vehicle information</h3>
+            <p class="fine-print">Register your tricycle. Admin approval is required.</p>
+            <div class="form-row">
+              <div>
+                <label for="vehReg">Registration / Plate number</label>
+                <input id="vehReg" type="text" maxlength="40" placeholder="e.g. ABC-123XY">
+              </div>
+              <div>
+                <label for="vehMake">Make / Model</label>
+                <input id="vehMake" type="text" maxlength="80" placeholder="e.g. Bajaj RE">
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="vehColour">Colour</label>
+                <input id="vehColour" type="text" maxlength="50" placeholder="e.g. Green">
+              </div>
+              <div>
+                <label for="vehCapacity">Capacity</label>
+                <select id="vehCapacity">
+                  <option value="2">2</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-primary" id="saveVehicleBtn" type="button">Save vehicle</button>
+            <p class="fine-print" id="vehicleStatus">No vehicle registered yet.</p>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="page" id="page-settings" data-page="settings">
+          <div class="grid-2">
+            <div class="card">
+              <h3>Change password</h3>
+              <form id="passwordForm">
+                <label for="currentPassword">Current password</label>
+                <input id="currentPassword" type="password" autocomplete="current-password" required>
+                <label for="newPassword">New password</label>
+                <input id="newPassword" type="password" autocomplete="new-password" required minlength="10">
+                <label for="confirmPassword">Confirm new password</label>
+                <input id="confirmPassword" type="password" autocomplete="new-password" required minlength="10">
+                <button class="btn-primary" type="submit" id="changePwBtn">Update password</button>
+              </form>
+              <p class="fine-print">Minimum 10 characters. You stay signed in after changing.</p>
+            </div>
+            <div class="card">
+              <h3>Session</h3>
+              <p style="color:var(--muted);font-size:14px;margin:0 0 16px">Sign out clears your session on this device.</p>
+              <button class="btn-danger" id="logoutBtnSettings" type="button">Sign out</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ABOUT (in-app) -->
+        <section class="page" id="page-about" data-page="about">
+          <div class="card">
+            <h3>About CampusTrike</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.65;margin:0 0 16px">
+              Campus mobility platform for Abdullahi Fodio University of Science and Technology, Aliero.
+              Students book rides, drivers accept and complete trips, administrators manage the service.
+            </p>
+            <p class="fine-print">Locations and base fare (₦300) are placeholders pending formal AFUSTA approval.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <section id="authGate" class="auth-gate" hidden>
+    <div class="auth-card">
+      <div class="auth-brand">
+        <img src="assets/campustrike-icon.svg" alt="" width="40" height="40">
+        <div><strong style="font-family:'Plus Jakarta Sans',sans-serif">CampusTrike</strong></div>
+      </div>
+      <span class="eyebrow">Secure access</span>
+      <h2 id="authTitle">Welcome back</h2>
+      <p id="authDescription">Sign in to manage your campus rides.</p>
+      <form id="authForm">
+        <div id="nameField" hidden>
+          <label for="authName">Full name</label>
+          <input id="authName" autocomplete="name" minlength="2" maxlength="140">
+        </div>
+        <label for="authEmail">Email address</label>
+        <input id="authEmail" type="email" autocomplete="email" required>
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password" minlength="10" required>
+        <div id="roleField" hidden>
+          <label for="authRole">Account type</label>
+          <select id="authRole">
+            <option value="student">Student</option>
+            <option value="driver">Tricycle driver</option>
+          </select>
+        </div>
+        <button class="btn-primary full" id="authSubmit" type="submit">Sign in →</button>
+      </form>
+      <p class="auth-switch">
+        <span id="authSwitchText">New to CampusTrike?</span>
+        <button id="authSwitch" type="button">Create account</button>
+      </p>
+      <p class="fine-print">Admin accounts are provisioned by the system owner only.</p>
+    </div>
+  </section>
+
+  <!-- Ride confirmation modal (Figure 4.4 style) -->
+  <div id="confirmModal" class="auth-gate" hidden>
+    <div class="auth-card" style="max-width:420px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin:0;font-family:'Plus Jakarta Sans',sans-serif;font-size:18px" id="confirmTitle">Ride confirmed</h2>
+        <button type="button" id="closeConfirm" style="font-size:20px;color:var(--muted)">×</button>
+      </div>
+      <div class="detail-grid" style="margin-bottom:16px">
+        <div class="detail-item"><label>Status</label><span id="confirmStatus">—</span></div>
+        <div class="detail-item"><label>Driver</label><span id="confirmDriver">—</span></div>
+        <div class="detail-item"><label>Pickup</label><span id="confirmPickup">—</span></div>
+        <div class="detail-item"><label>Destination</label><span id="confirmDest">—</span></div>
+        <div class="detail-item"><label>Reference</label><span id="confirmRef">—</span></div>
+        <div class="detail-item"><label>Fare</label><span id="confirmFare" style="color:var(--green);font-weight:800">—</span></div>
+      </div>
+      <p class="fine-print" id="confirmNote"></p>
+      <button class="btn-primary full" id="confirmOk" type="button">OK</button>
+    </div>
+  </div>
+
+  <!-- Rating modal -->
+  <div id="ratingModal" class="auth-gate" hidden>
+    <div class="auth-card" style="max-width:360px">
+      <h2 style="margin:0 0 6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:20px">Rate your trip</h2>
+      <p style="color:var(--muted);font-size:14px;margin:0 0 12px">How was your experience?</p>
+      <div class="stars" id="ratingStars">
+        <span class="star" data-v="1">★</span>
+        <span class="star" data-v="2">★</span>
+        <span class="star" data-v="3">★</span>
+        <span class="star" data-v="4">★</span>
+        <span class="star" data-v="5">★</span>
+      </div>
+      <label for="ratingComment">Comment (optional)</label>
+      <textarea id="ratingComment" rows="2" maxlength="200"></textarea>
+      <button class="btn-primary full" id="submitRating" type="button">Submit rating</button>
+      <button class="btn-secondary full" id="skipRating" type="button" style="margin-top:8px">Skip</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
